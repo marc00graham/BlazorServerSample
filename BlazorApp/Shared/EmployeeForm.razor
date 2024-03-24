@@ -1,0 +1,86 @@
+﻿@if (Employee is not null)
+{
+	<EditForm Model="@Employee" 
+		OnValidSubmit="@HandleValidSubmit" 
+		OnInvalidSubmit="@HandleInValidSubmit">
+		
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div class="mb-3">
+			<SfTextBox ID="firstname" @bind-Value="Employee.FirstName" Placeholder="First Name" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+		</div>
+
+		<div class="mb-3">
+			<SfTextBox ID="lastname" @bind-Value="Employee.LastName" Placeholder="Last Name" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+		</div>
+
+		<div class="mb-3">
+			<SfDropDownList FloatLabelType="FloatLabelType.Always" Placeholder="Department"
+						TValue="int?" TItem="Department" DataSource="@Departments"
+						@bind-Value="@Employee.DepartmentId">
+				<DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
+			</SfDropDownList>
+		</div>
+
+		<div class="mb-3">
+			<SfCheckBox Label="Is Developer"
+				LabelPosition="Syncfusion.Blazor.Buttons.LabelPosition.Before"
+			@bind-Checked="@Employee.IsDeveloper"></SfCheckBox>
+		</div>
+
+		@if (IsEdit)
+		{
+			<SfButton Disabled="@IsBusy" IsPrimary="true" >Update</SfButton>
+			<SfButton Disabled="@IsBusy" OnClick="@HandleCancel">Cancel</SfButton>
+		}
+		else
+		{
+			<SfButton IsPrimary="true" Disabled=@IsBusy>Add</SfButton>
+		}
+	</EditForm>
+}
+
+@code {
+	[Parameter]
+	public Employee? Employee { get; set; }
+
+	[Parameter]
+	public Department[]? Departments { get; set; }
+
+	[Parameter]
+	public bool IsBusy { get; set; }
+
+	[Parameter]
+	public bool IsEdit { get; set; }
+
+	[Parameter]
+	public EventCallback OnCancel { get; set; }
+
+	[Parameter]
+	public EventCallback<bool> OnSubmit { get; set; }
+
+	private async Task HandleValidSubmit()
+	{
+		if (OnSubmit.HasDelegate)
+		{
+			await OnSubmit.InvokeAsync(true);
+		}
+	}
+
+	private async Task HandleInValidSubmit()
+	{
+		if (OnSubmit.HasDelegate)
+		{
+			await OnSubmit.InvokeAsync(false);
+		}
+	}
+
+	private async Task HandleCancel()
+	{
+		if (OnCancel.HasDelegate)
+		{
+			await OnCancel.InvokeAsync();
+		}
+	}
+}
